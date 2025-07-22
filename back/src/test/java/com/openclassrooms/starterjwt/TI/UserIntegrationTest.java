@@ -52,6 +52,8 @@ public class UserIntegrationTest {
 
         // Vérifie ensuite en base
         assertTrue(userRepository.existsByEmail("test@example.com"));
+        //petit check pour vérifié l'autoIcrementation
+        //        assertTrue(userRepository.existsById(8L));
     }
  
 }

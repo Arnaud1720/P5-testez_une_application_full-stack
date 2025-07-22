@@ -29,7 +29,7 @@ public class TeacherServiceTest {
     @Test
     void givenTeachersExist_whenFindAll_thenReturnsFullList() {
         // --- Given ---
-        Teacher s1 = Teacher.builder()
+        Teacher l1 = Teacher.builder()
                 .id(306L)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
@@ -37,7 +37,7 @@ public class TeacherServiceTest {
                 .lastName("bbbb")
                 .build();
 
-        Teacher s2 = Teacher.builder()
+        Teacher l2 = Teacher.builder()
                 .id(402L)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
@@ -45,7 +45,7 @@ public class TeacherServiceTest {
                 .lastName("bbbb")
                 .build();
 
-        List<Teacher> mockedList = List.of(s1, s2);
+        List<Teacher> mockedList = List.of(l1, l2);
         when(teacherRepository.findAll()).thenReturn(mockedList);
 
         // --- When ---
@@ -63,7 +63,7 @@ public class TeacherServiceTest {
     void givenExistingTeacherId_whenFindById_thenReturnsTeacher() {
         // Given
         Long teacherId = 1L;
-        Teacher teacher = new Teacher();        // ← un Teacher, pas un User
+        Teacher teacher = new Teacher();
         teacher.setId(teacherId);
         teacher.setFirstName("Dupont");
         teacher.setLastName("test");
@@ -71,7 +71,6 @@ public class TeacherServiceTest {
         teacher.setUpdatedAt(LocalDateTime.now());
 
 
-        // Ici, on stubbe findById pour qu’il renvoie un Optional<Teacher> valide
         when(teacherRepository.findById(teacherId))
                 .thenReturn(Optional.of(teacher));
 

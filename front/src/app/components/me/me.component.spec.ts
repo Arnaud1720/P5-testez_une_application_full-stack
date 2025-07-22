@@ -39,6 +39,8 @@ describe('MeComponent', () => {
     fixture.detectChanges();
   });
 
+  it('delete() should DELETE')
+
   it('should create', () => {
     expect(component).toBeTruthy();
   });

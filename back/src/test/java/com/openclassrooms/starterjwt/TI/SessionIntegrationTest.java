@@ -1,7 +1,11 @@
 package com.openclassrooms.starterjwt.TI;
 
+import com.openclassrooms.starterjwt.exception.BadRequestException;
+import com.openclassrooms.starterjwt.exception.NotFoundException;
 import com.openclassrooms.starterjwt.models.Session;
+import com.openclassrooms.starterjwt.models.User;
 import com.openclassrooms.starterjwt.repository.SessionRepository;
+import com.openclassrooms.starterjwt.repository.UserRepository;
 import com.openclassrooms.starterjwt.services.SessionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,125 +32,173 @@ public class SessionIntegrationTest {
     @Autowired
     private SessionRepository sessionRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @BeforeEach
     void cleanDatabase() {
         sessionRepository.deleteAll();
 
     }
 
+    // 1) test create(Session)
     @Test
-    public void givenExistingSessionId_whenFindById_thenReturnsSession() {
-        // --- Given ---
+    void whenCreate_thenSessionIsPersisted() {
         Session s = new Session();
-        s.setName("TI Session 1");
+        s.setName("Nouvelle TI");
         s.setDate(new Date());
-        s.setDescription("Description TI 1");
+        s.setDescription("Desc TI create");
+
+        Session saved = sessionService.create(s);
+        assertNotNull(saved.getId(), "L'ID doit être généré");
+        assertEquals("Nouvelle TI", saved.getName());
+
+        // Vérification directe en base
+        Optional<Session> fromDb = sessionRepository.findById(saved.getId());
+        assertTrue(fromDb.isPresent());
+        assertEquals("Desc TI create", fromDb.get().getDescription());
+    }
+
+
+    // 2) test delete(Long)
+    @Test
+    void givenExistingSession_whenDelete_thenGoneFromDatabase() {
+        Session s = new Session();
+        s.setName("TI à supprimer");
+        s.setDate(new Date());
+        s.setDescription("Desc");
         Session saved = sessionRepository.save(s);
-        Long sessionId = saved.getId();
-        assertNotNull(sessionId);
 
-        // --- When ---
-        Session result = sessionService.getById(sessionId);
+        sessionService.delete(saved.getId());
 
-        // --- Then ---
-        assertNotNull(result);
-        assertEquals(sessionId, result.getId());
-        assertEquals("TI Session 1", result.getName());
+        assertFalse(sessionRepository.findById(saved.getId()).isPresent(),
+                "La session ne doit plus exister");
+    }
 
-        Optional<Session> fromDb = sessionRepository.findById(sessionId);
-        assertTrue(fromDb.isPresent());
-        assertEquals("TI Session 1", fromDb.get().getName());
+    // 3) findAll()
+    @Test
+    void givenSomeSessions_whenFindAll_thenReturnsThem() {
+        Session s1 = new Session(); s1.setName("A"); s1.setDate(new Date()); s1.setDescription("A");
+        Session s2 = new Session(); s2.setName("B"); s2.setDate(new Date()); s2.setDescription("B");
+        sessionRepository.saveAll(List.of(s1, s2));
+
+        List<Session> all = sessionService.findAll();
+        assertEquals(2, all.size());
+        // on vérifie par noms
+        assertTrue(all.stream().anyMatch(s -> s.getName().equals("A")));
+        assertTrue(all.stream().anyMatch(s -> s.getName().equals("B")));
+    }
+
+    // 4) getById(Long)
+    @Test
+    void givenUnknownId_whenGetById_thenReturnsNull() {
+        assertNull(sessionService.getById(999L));
     }
 
     @Test
-    void givenSessionsExist_whenFindAll_thenReturnsFullList() {
-        // --- Given ---
-        Session s1 = new Session();
-        s1.setName("TI All 1");
-        s1.setDate(new Date());
-        s1.setDescription("Desc All 1");
-        Session saved1 = sessionRepository.save(s1);
+    void givenKnownId_whenGetById_thenReturnsSession() {
+        Session s = sessionRepository.save(new Session()
+                .setName("TI getById")
+                .setDate(new Date())
+                .setDescription("D"));
+        Session fetched = sessionService.getById(s.getId());
+        assertNotNull(fetched);
+        assertEquals("TI getById", fetched.getName());
+    }
 
-        Session s2 = new Session();
-        s2.setName("TI All 2");
-        s2.setDate(new Date());
-        s2.setDescription("Desc All 2");
-        Session saved2 = sessionRepository.save(s2);
+    // 5) update(Long, Session)
+    @Test
+    void givenExistingId_whenUpdate_thenSessionUpdated() {
+        Session orig = sessionRepository.save(new Session()
+                .setName("Before")
+                .setDate(new Date())
+                .setDescription("Desc"));
+        Session toUpdate = new Session()
+                .setName("After")
+                .setDate(new Date())
+                .setDescription("NewDesc");
+        Session updated = sessionService.update(orig.getId(), toUpdate);
 
-        // --- When ---
-        List<Session> result = sessionService.findAll();
+        assertEquals(orig.getId(), updated.getId());
+        assertEquals("After", updated.getName());
+        // relecture en base
+        Session fromDb = sessionRepository.findById(orig.getId()).orElseThrow();
+        assertEquals("NewDesc", fromDb.getDescription());
+    }
 
-        // --- Then ---
-        assertNotNull(result);
-        assertEquals(2, result.size());
-        boolean found1 = result.stream().anyMatch(sess -> sess.getId().equals(saved1.getId()));
-        boolean found2 = result.stream().anyMatch(sess -> sess.getId().equals(saved2.getId()));
-        assertTrue(found1);
-        assertTrue(found2);
+    // 6) participate(Long, Long)
+    @Test
+    void givenValidSessionAndUser_whenParticipate_thenUserInSession() {
+        User u = userRepository.save(new User().setEmail("a@b.com").setFirstName("A").setLastName("B").setPassword("pwd"));
+        Session s = sessionRepository.save(new Session()
+                .setName("TI P")
+                .setDate(new Date())
+                .setDescription("D"));
+
+        sessionService.participate(s.getId(), u.getId());
+
+        Session fromDb = sessionRepository.findById(s.getId()).orElseThrow();
+        assertTrue(fromDb.getUsers().stream().anyMatch(x -> x.getId().equals(u.getId())));
     }
 
     @Test
-    void givenNoSessions_whenFindAll_thenReturnsEmptyList() {
-        // --- Given ---
-        // Base déjà vide après @BeforeEach
+    void givenAlreadyParticipating_whenParticipate_thenBadRequest() {
+        User u = userRepository.save(new User().setEmail("x@x.com").setFirstName("X").setLastName("X").setPassword("pwd"));
+        Session s = sessionRepository.save(new Session()
+                .setName("TI P2")
+                .setDate(new Date())
+                .setDescription("D")
+                .setUsers(List.of(u)));
 
-        // --- When ---
-        List<Session> result = sessionService.findAll();
-
-        // --- Then ---
-        assertNotNull(result);
-        assertTrue(result.isEmpty());
+        assertThrows(BadRequestException.class,
+                () -> sessionService.participate(s.getId(), u.getId()));
     }
 
     @Test
-    void givenExistingSessionAndId_whenUpdate_thenSessionIsUpdatedInDatabase() {
-        // --- Given ---
-        Session original = new Session();
-        original.setName("Original Name");
-        original.setDate(new Date());
-        original.setDescription("Original Desc");
-        Session savedOriginal = sessionRepository.save(original);
-        Long existingId = savedOriginal.getId();
+    void givenUnknownSessionOrUser_whenParticipate_thenNotFound() {
+        // session inconnue
+        assertThrows(NotFoundException.class,
+                () -> sessionService.participate(111L, 222L));
+        // session valide, user manquant
+        Session s = sessionRepository.save(new Session()
+                .setName("TI P3")
+                .setDate(new Date())
+                .setDescription("D"));
+        assertThrows(NotFoundException.class,
+                () -> sessionService.participate(s.getId(), 999L));
+    }
 
-        Session toUpdate = new Session();
-        toUpdate.setName("Updated Name");
-        toUpdate.setDate(new Date(System.currentTimeMillis() + 86400000)); // + 1 jour
-        toUpdate.setDescription("Updated Desc");
+    // 7) noLongerParticipate(Long, Long)
+    @Test
+    void givenParticipatingUser_whenNoLongerParticipate_thenRemoved() {
+        User u = userRepository.save(new User().setEmail("r@r.com").setFirstName("R").setLastName("R").setPassword("pwd"));
+        Session s = sessionRepository.save(new Session()
+                .setName("TI NP")
+                .setDate(new Date())
+                .setDescription("D")
+                .setUsers(List.of(u)));
 
-        // --- When ---
-        Session updatedResult = sessionService.update(existingId, toUpdate);
+        sessionService.noLongerParticipate(s.getId(), u.getId());
 
-        // --- Then ---
-        assertNotNull(updatedResult);
-        assertEquals(existingId, updatedResult.getId());
-        assertEquals("Updated Name", updatedResult.getName());
-        assertEquals("Updated Desc", updatedResult.getDescription());
-
-        Optional<Session> fromDb = sessionRepository.findById(existingId);
-        assertTrue(fromDb.isPresent());
-        assertEquals("Updated Name", fromDb.get().getName());
+        Session after = sessionRepository.findById(s.getId()).orElseThrow();
+        assertTrue(after.getUsers().isEmpty());
     }
 
     @Test
-    void givenInvalidUpdateData_whenUpdate_thenThrowsConstraintViolation() {
-        // --- Given ---
-        Session original = new Session();
-        original.setName("Name");
-        original.setDate(new Date());
-        original.setDescription("Desc");
-        Session savedOriginal = sessionRepository.save(original);
-        Long id = savedOriginal.getId();
+    void givenNotParticipatingUser_whenNoLongerParticipate_thenBadRequest() {
+        Session s = sessionRepository.save(new Session()
+                .setName("TI NP2")
+                .setDate(new Date())
+                .setDescription("D")
+                .setUsers(List.of()));
+        assertThrows(BadRequestException.class,
+                () -> sessionService.noLongerParticipate(s.getId(), 123L));
+    }
 
-        Session toUpdate = new Session();
-        toUpdate.setName("");
-        toUpdate.setDate(null);
-        toUpdate.setDescription("X");     // supposons que @Size(min=…) soit plus long
-        toUpdate.setId(id);
-
-        // --- When & Then ---
-        assertThrows(ConstraintViolationException.class, () -> {
-            sessionService.update(id, toUpdate);
-        });
+    @Test
+    void givenUnknownSession_whenNoLongerParticipate_thenNotFound() {
+        assertThrows(NotFoundException.class,
+                () -> sessionService.noLongerParticipate(555L, 1L));
     }
 
 }
