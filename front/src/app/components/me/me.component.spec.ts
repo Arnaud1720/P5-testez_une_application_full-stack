@@ -4,11 +4,11 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { expect } from '@jest/globals';
 import { SessionService } from 'src/app/services/session.service';
 
-import { MeComponent } from './me.component';
-
+import {MeComponent} from "./me.component";
+import {MatSnackBarModule} from "@angular/material/snack-bar";
 describe('MeComponent', () => {
   let component: MeComponent;
   let fixture: ComponentFixture<MeComponent>;

@@ -35,7 +35,7 @@ describe('SessionService', () => {
 
   it('logOut() doit notifier les abonnés', (done) => {
     // GIVEN : logué d’abord
-    service.logIn({ id: 1, email: 'a@b.com' } as any);
+    service.logIn({ id: 64, email: 'arnauds0j0jf@gmail.com' } as any);
 
     // On s’abonne avant d’appeler logOut()
     service.$isLogged().pipe(take(1)).subscribe(() => {

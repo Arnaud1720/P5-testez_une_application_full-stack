@@ -1,9 +1,23 @@
 {
   "extends": "../tsconfig.json",
+
   "compilerOptions": {
-    "isolatedModules": false
+
+    "sourceMap": false,          // on laisse inlineSourceMap géré par Cypress
+
+
+    "types": ["cypress", "node"],
+    "typeRoots": [
+      "../node_modules/@types",
+      "./support"                // contient ton index.d.ts
+    ]
   },
+
   "include": [
-    "../node_modules/cypress"
-  ]
+    "support/index.d.ts",
+    "support   *.ts",           // ex : commands.ts
+    "e2e   *.ts"                // tes specs
+  ],
+
+  "exclude": ["node_modules", "dist"]
 }

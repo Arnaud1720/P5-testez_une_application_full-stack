@@ -45,7 +45,7 @@ describe('UserService', () => {
   })
   it('delete() should DELETE user by id', () => {
     // 1) — Prépare la réponse factice du serveur
-    //    • Si ton backend renvoie un 204 No Content → tu flush(null)
+    //    • Si  backend renvoie un 204 No Content → tu flush(null)
     //    • S’il renvoie un message JSON → tu flush({ message: 'deleted' })
     const mockResponse = null;      // ici on simule 204 No Content
 

@@ -15,9 +15,9 @@
         <p *ngIf="user.admin" class="my2">You are admin</p>
         <div *ngIf="!user.admin" fxLayout="column" class="my2" fxLayoutAlign="center center">
           <p>Delete my account:</p>
-          <button mat-raised-button color="warn" (click)="delete()">
+          <button data-cy="delete-account" mat-raised-button color="warn" (click)="delete()">
             <mat-icon>delete</mat-icon>
-            <span class="ml1">Detail</span>
+            <span class="ml1" data-cy="desplay-details">Detail</span>
           </button>
         </div>
         <div fxLayoutAlign="space-between center" class="p2 w100">

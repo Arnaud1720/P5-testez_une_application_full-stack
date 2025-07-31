@@ -1,40 +1,109 @@
-import { HttpClientModule } from '@angular/common/http';
+import { expect, jest }              from '@jest/globals';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { expect } from '@jest/globals';
+import { ReactiveFormsModule }       from '@angular/forms';
+import { NO_ERRORS_SCHEMA }          from '@angular/core';
+import { of, throwError }            from 'rxjs';
 
 import { RegisterComponent } from './register.component';
+import { AuthService }       from '../../services/auth.service';
+import { Router }            from '@angular/router';
 
 describe('RegisterComponent', () => {
-  let component: RegisterComponent;
   let fixture: ComponentFixture<RegisterComponent>;
+  let component: RegisterComponent;
+
+
+  const fakeRouter = { navigate: jest.fn() };
+  const fakeAuth   = { register: jest.fn() };
+
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      imports:      [ReactiveFormsModule],
       declarations: [RegisterComponent],
-      imports: [
-        BrowserAnimationsModule,
-        HttpClientModule,
-        ReactiveFormsModule,  
-        MatCardModule,
-        MatFormFieldModule,
-        MatIconModule,
-        MatInputModule
-      ]
-    })
-      .compileComponents();
+      providers: [
+        { provide: AuthService, useValue: fakeAuth },
+        { provide: Router,      useValue: fakeRouter }
+      ],
+      schemas: [NO_ERRORS_SCHEMA]   // on ignore mat-card, mat-input…
+    }).compileComponents();
 
-    fixture = TestBed.createComponent(RegisterComponent);
+    fixture   = TestBed.createComponent(RegisterComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
-  it('should create', () => {
+
+  it('devrait être créé', () => {
     expect(component).toBeTruthy();
+  });
+
+
+  it('form invalide au départ', () => {
+    expect(component.form.valid).toBe(false);
+  });
+
+
+  it('form valide après remplissage correct', () => {
+    component.form.setValue({
+      email:     'alice@mail.com',
+      firstName: 'Alice',
+      lastName:  'Durant',
+      password:  'secret'
+    });
+    expect(component.form.valid).toBe(true);
+  });
+
+
+  it('empêche submit si formulaire invalide', () => {
+    component.form.setValue({
+      email:     '',
+      firstName: 'Al',
+      lastName:  'Du',
+      password:  '1'
+    });
+
+    component.submit();
+
+    expect(fakeAuth.register).not.toHaveBeenCalled();
+    expect(component.onError).toBe(false);
+    expect(fakeRouter.navigate).not.toHaveBeenCalled();
+  });
+
+
+  it('submit succès : appelle register puis navigate', () => {
+    fakeAuth.register.mockReturnValue(of(void 0));
+    component.form.setValue({
+      email:     'alice@mail.com',
+      firstName: 'Alice',
+      lastName:  'Durant',
+      password:  'secret'
+    });
+
+    component.submit();
+
+    expect(fakeAuth.register).toHaveBeenCalledWith({
+      email:     'alice@mail.com',
+      firstName: 'Alice',
+      lastName:  'Durant',
+      password:  'secret'
+    });
+    expect(fakeRouter.navigate).toHaveBeenCalledWith(['/login']);
+    expect(component.onError).toBe(false);
+  });
+
+
+  it('submit erreur : onError passe à true, pas de navigation', () => {
+    fakeAuth.register.mockReturnValue(throwError(() => new Error('409')));
+    component.form.setValue({
+      email:     'dup@mail.com',
+      firstName: 'Jean',
+      lastName:  'Dupont',
+      password:  '123'
+    });
+
+    component.submit();
+
+    expect(component.onError).toBe(true);
+    expect(fakeRouter.navigate).not.toHaveBeenCalled();
   });
 });
