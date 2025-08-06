@@ -53,12 +53,15 @@ export class RegisterComponent {
   }
 
   public submit(): void {
+    if (this.form.invalid) {
+      return; // on sort, on n'appelle rien
+    }
+
     const registerRequest = this.form.value as RegisterRequest;
     this.authService.register(registerRequest).subscribe({
-        next: (_: void) => this.router.navigate(['/login']),
-        error: _ => this.onError = true,
-      }
-    );
+      next: (_: void) => this.router.navigate(['/login']),
+      error: _ => this.onError = true,
+    });
   }
 
 }

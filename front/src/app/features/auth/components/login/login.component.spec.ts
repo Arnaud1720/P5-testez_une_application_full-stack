@@ -66,7 +66,7 @@ describe('LoginComponent avec vrai SessionService', () => {
     flush();
 
     expect(component.onError).toBe(true);
-    expect(realSessionSvc.isLogged).toBe(false);      // ✅
+    expect(realSessionSvc.isLogged).toBe(false);
     expect(fakeRouter.navigate).not.toHaveBeenCalled();
   }));
 });

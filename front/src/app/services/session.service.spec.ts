@@ -4,7 +4,7 @@ import { expect } from '@jest/globals';
 import { SessionService } from './session.service';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {HttpClientModule} from "@angular/common/http";
-import {take} from "rxjs";
+import {filter, take} from "rxjs";
 
 describe('SessionService', () => {
   let service: SessionService;
@@ -35,14 +35,17 @@ describe('SessionService', () => {
 
   it('logOut() doit notifier les abonnés', (done) => {
     // GIVEN : logué d’abord
-    service.logIn({ id: 64, email: 'arnauds0j0jf@gmail.com' } as any);
+    service.logIn({ id: 1, email: 'arnaud68ls7x@gmail.com' } as any);
 
-    // On s’abonne avant d’appeler logOut()
-    service.$isLogged().pipe(take(1)).subscribe(() => {
+    // On s’abonne à $isLogged(), mais on filtre pour n’avoir QUE la déconnexion
+    service.$isLogged().pipe(
+      filter(isLogged => !isLogged), // <== on attend le moment où c'est "false"
+      take(1)
+    ).subscribe(() => {
       // THEN : on est dans le next() déclenché par logOut()
       expect(service.sessionInformation).toBeUndefined();
       expect(service.isLogged).toBe(false);
-      done();   // fin du test asynchrone
+      done();
     });
 
     // WHEN

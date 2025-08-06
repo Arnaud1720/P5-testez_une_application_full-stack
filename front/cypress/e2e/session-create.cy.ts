@@ -40,4 +40,6 @@ describe('Création d’une session', () => {
     cy.wait('@postSession').its('response.statusCode').should('eq', 201);
     cy.url().should('include', '/sessions');
   });
+
+
 });
