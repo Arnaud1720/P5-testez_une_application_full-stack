@@ -28,7 +28,6 @@ public class TeacherServiceTest {
 
     @Test
     void givenTeachersExist_whenFindAll_thenReturnsFullList() {
-        // --- Given ---
         Teacher l1 = Teacher.builder()
                 .id(306L)
                 .createdAt(LocalDateTime.now())
@@ -48,10 +47,7 @@ public class TeacherServiceTest {
         List<Teacher> mockedList = List.of(l1, l2);
         when(teacherRepository.findAll()).thenReturn(mockedList);
 
-        // --- When ---
         List<Teacher> result = teacherService.findAll();
-
-        // --- Then ---
         assertNotNull(result);
         assertEquals(2, result.size());
         assertEquals(306L, result.get(0).getId().longValue());
@@ -61,7 +57,6 @@ public class TeacherServiceTest {
 
     @Test
     void givenExistingTeacherId_whenFindById_thenReturnsTeacher() {
-        // Given
         Long teacherId = 1L;
         Teacher teacher = new Teacher();
         teacher.setId(teacherId);
@@ -73,11 +68,7 @@ public class TeacherServiceTest {
 
         when(teacherRepository.findById(teacherId))
                 .thenReturn(Optional.of(teacher));
-
-        // When
         Teacher result = teacherService.findById(teacherId);
-
-        // Then
         assertNotNull(result);
         assertEquals(teacher, result);
         verify(teacherRepository).findById(teacherId);

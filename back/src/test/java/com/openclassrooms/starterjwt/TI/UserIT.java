@@ -3,11 +3,12 @@ import com.openclassrooms.starterjwt.repository.SessionRepository;
 import com.openclassrooms.starterjwt.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -17,8 +18,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class UserIntegrationTest {
+@ActiveProfiles("test")                              // <- lit src/test/resources/application-test.properties
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+public class UserIT {
 
     @Autowired
     private MockMvc mockMvc;
@@ -31,8 +33,8 @@ public class UserIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        sessionRepository.deleteAll(); // supprime d’abord toutes les sessions (et donc la table PARTICIPATE)
-        userRepository.deleteAll();         // puis on peut supprimer les utilisateurs
+        sessionRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test
@@ -50,10 +52,7 @@ public class UserIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("User registered successfully!"));
 
-        // Vérifie ensuite en base
         assertTrue(userRepository.existsByEmail("test@example.com"));
-        //petit check pour vérifié l'autoIcrementation
-        //        assertTrue(userRepository.existsById(8L));
-    }
+        }
  
 }

@@ -55,17 +55,14 @@ const fakeSessionApiService = {
   unParticipate: jest.fn().mockReturnValue(of({})),
 };
 
-// TeacherService simulé
 const fakeTeacherService = {
   detail: jest.fn().mockReturnValue(of(mockTeacher))
 };
 
-// MatSnackBar simulé
 const fakeSnackBar = {
   open: jest.fn()
 };
 
-// Router simulé
 const fakeRouter = {
   navigate: jest.fn()
 };
@@ -107,7 +104,6 @@ describe('DetailComponent', () => {
     // fixture.detectChanges() déclenche ngOnInit
     fixture.detectChanges();
 
-    // contrôles
     expect(fakeSessionApiService.detail).toHaveBeenCalledWith('42');
     expect(component.session).toEqual(mockSession);
     expect(component.isParticipate).toBe(true);    // l’ID 7 est dans session.users
@@ -117,7 +113,6 @@ describe('DetailComponent', () => {
 
   it('delete() doit afficher un snackbar et naviguer', fakeAsync(() => {
     component.delete();
-    // on laisse passer l’observable
     flush();
 
     expect(fakeSessionApiService.delete).toHaveBeenCalledWith('42');
@@ -127,7 +122,6 @@ describe('DetailComponent', () => {
 
 
   it('participate() doit appeler participate puis recharger la session', fakeAsync(() => {
-    // on spy sur fetchSession
     const spyFetch = jest.spyOn(component as any, 'fetchSession');
     component.participate();
     flush();

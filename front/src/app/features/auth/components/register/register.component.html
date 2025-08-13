@@ -21,5 +21,8 @@
             <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">Submit</button>
             <span *ngIf="onError" class="error ml2">An error occurred</span>
         </form>
+      <div *ngIf="errorMessage" class="error">
+        {{ errorMessage }}
+      </div>
     </mat-card>
 </div>

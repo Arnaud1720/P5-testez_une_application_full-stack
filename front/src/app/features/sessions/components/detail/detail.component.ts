@@ -55,11 +55,17 @@ export class DetailComponent implements OnInit {
   }
 
   public participate(): void {
-    this.sessionApiService.participate(this.sessionId, this.userId).subscribe(_ => this.fetchSession());
+    this.sessionApiService.participate(this.sessionId, this.userId).subscribe({
+      next: () => this.fetchSession(),
+      error: () => this.matSnackBar.open("Erreur lors de l'inscription à la séance", 'Fermer', { duration: 3000 })
+    });
   }
 
   public unParticipate(): void {
-    this.sessionApiService.unParticipate(this.sessionId, this.userId).subscribe(_ => this.fetchSession());
+    this.sessionApiService.unParticipate(this.sessionId, this.userId).subscribe({
+      next: () => this.fetchSession(),
+      error: () => this.matSnackBar.open("Erreur lors de la désinscription", 'Fermer', { duration: 3000 })
+    });
   }
 
   private fetchSession(): void {

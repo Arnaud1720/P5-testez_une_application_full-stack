@@ -9,13 +9,12 @@ import com.openclassrooms.starterjwt.repository.UserRepository;
 import com.openclassrooms.starterjwt.services.SessionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
-import javax.validation.ConstraintViolationException;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -24,8 +23,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class SessionIntegrationTest {
+@ActiveProfiles("test")                              // <- lit src/test/resources/application-test.properties
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+public class SessionIT extends AbstractMySqlIT{
     @Autowired
     private SessionService sessionService;
 
@@ -41,7 +41,6 @@ public class SessionIntegrationTest {
 
     }
 
-    // 1) test create(Session)
     @Test
     void whenCreate_thenSessionIsPersisted() {
         Session s = new Session();
@@ -53,14 +52,12 @@ public class SessionIntegrationTest {
         assertNotNull(saved.getId(), "L'ID doit être généré");
         assertEquals("Nouvelle TI", saved.getName());
 
-        // Vérification directe en base
         Optional<Session> fromDb = sessionRepository.findById(saved.getId());
         assertTrue(fromDb.isPresent());
         assertEquals("Desc TI create", fromDb.get().getDescription());
     }
 
 
-    // 2) test delete(Long)
     @Test
     void givenExistingSession_whenDelete_thenGoneFromDatabase() {
         Session s = new Session();
@@ -75,7 +72,6 @@ public class SessionIntegrationTest {
                 "La session ne doit plus exister");
     }
 
-    // 3) findAll()
     @Test
     void givenSomeSessions_whenFindAll_thenReturnsThem() {
         Session s1 = new Session(); s1.setName("A"); s1.setDate(new Date()); s1.setDescription("A");
@@ -84,12 +80,10 @@ public class SessionIntegrationTest {
 
         List<Session> all = sessionService.findAll();
         assertEquals(2, all.size());
-        // on vérifie par noms
         assertTrue(all.stream().anyMatch(s -> s.getName().equals("A")));
         assertTrue(all.stream().anyMatch(s -> s.getName().equals("B")));
     }
 
-    // 4) getById(Long)
     @Test
     void givenUnknownId_whenGetById_thenReturnsNull() {
         assertNull(sessionService.getById(999L));
@@ -106,7 +100,6 @@ public class SessionIntegrationTest {
         assertEquals("TI getById", fetched.getName());
     }
 
-    // 5) update(Long, Session)
     @Test
     void givenExistingId_whenUpdate_thenSessionUpdated() {
         Session orig = sessionRepository.save(new Session()
@@ -121,12 +114,10 @@ public class SessionIntegrationTest {
 
         assertEquals(orig.getId(), updated.getId());
         assertEquals("After", updated.getName());
-        // relecture en base
         Session fromDb = sessionRepository.findById(orig.getId()).orElseThrow();
         assertEquals("NewDesc", fromDb.getDescription());
     }
 
-    // 6) participate(Long, Long)
     @Test
     void givenValidSessionAndUser_whenParticipate_thenUserInSession() {
         User u = userRepository.save(new User().setEmail("a@b.com").setFirstName("A").setLastName("B").setPassword("pwd"));
@@ -159,7 +150,6 @@ public class SessionIntegrationTest {
         // session inconnue
         assertThrows(NotFoundException.class,
                 () -> sessionService.participate(111L, 222L));
-        // session valide, user manquant
         Session s = sessionRepository.save(new Session()
                 .setName("TI P3")
                 .setDate(new Date())
@@ -168,7 +158,6 @@ public class SessionIntegrationTest {
                 () -> sessionService.participate(s.getId(), 999L));
     }
 
-    // 7) noLongerParticipate(Long, Long)
     @Test
     void givenParticipatingUser_whenNoLongerParticipate_thenRemoved() {
         User u = userRepository.save(new User().setEmail("r@r.com").setFirstName("R").setLastName("R").setPassword("pwd"));

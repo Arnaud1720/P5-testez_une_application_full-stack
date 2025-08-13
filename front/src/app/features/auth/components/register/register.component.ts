@@ -12,6 +12,7 @@ import { RegisterRequest } from '../../interfaces/registerRequest.interface';
 export class RegisterComponent {
 
   public onError = false;
+  public errorMessage = '';
 
   public form = this.fb.group({
     email: [
@@ -60,7 +61,24 @@ export class RegisterComponent {
     const registerRequest = this.form.value as RegisterRequest;
     this.authService.register(registerRequest).subscribe({
       next: (_: void) => this.router.navigate(['/login']),
-      error: _ => this.onError = true,
+      error: (err) => {
+        switch (err.status) {
+          case 401:
+            this.errorMessage = "Vous devez être connecté(e)";
+            break;
+          case 500:
+            this.errorMessage = "Erreur interne serveur";
+            break;
+          case 404:
+            this.errorMessage = "Ressource non trouvée";
+            break;
+          case 501:
+            this.errorMessage="Non implémenté";
+            break;
+          default:
+            this.errorMessage = err?.error?.message ?? "Erreur lors de la création du compte";
+        }
+      }
     });
   }
 

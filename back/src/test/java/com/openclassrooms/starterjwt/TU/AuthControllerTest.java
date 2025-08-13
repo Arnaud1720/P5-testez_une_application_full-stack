@@ -58,17 +58,14 @@ public class AuthControllerTest {
 
     @Test
     void givenEmailAlreadyExists_whenRegisterUser_thenReturnsBadRequest() {
-        // Given
         SignupRequest request = new SignupRequest(
                 "arnaud1720@gmail.com", "DERISBOURG", "Arnaud", "#Chester33980H1"
         );
 
         when(userRepository.existsByEmail(request.getEmail())).thenReturn(true);
 
-        // When
-        ResponseEntity<?> response = authController.registerUser(request);
 
-        // Then
+        ResponseEntity<?> response = authController.registerUser(request);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 
         MessageResponse body = (MessageResponse) response.getBody();

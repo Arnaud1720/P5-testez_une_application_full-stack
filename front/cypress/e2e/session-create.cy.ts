@@ -20,11 +20,7 @@ describe('Création d’une session', () => {
         .click();
 
     cy.location('pathname').should('eq', '/sessions/create');
-
-
     cy.wait('@getTeachers');
-
-
     cy.get('[data-cy=session-name]').type('Yoga Matinal');
     cy.get('[data-cy=session-date]').type('2025-07-25');         // format yyyy-MM-dd
     cy.get('[data-cy="session-teacher"]').click();
@@ -40,6 +36,7 @@ describe('Création d’une session', () => {
     cy.wait('@postSession').its('response.statusCode').should('eq', 201);
     cy.url().should('include', '/sessions');
   });
+
 
 
 });

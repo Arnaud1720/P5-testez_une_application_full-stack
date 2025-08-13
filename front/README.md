@@ -3,6 +3,15 @@
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 14.1.0.
 
 ## Start the project
+Méthode 1 : Télécharger le ZIP depuis GitHub (recommandé pour les débutants)
+Allez sur la page du projet :
+> 👉 https://github.com/Arnaud1720/P5-testez_une_application_full-stack
+
+Cliquez sur le bouton vert "Code"
+Sélectionnez "Download ZIP"
+Extrayez le dossier sur votre ordinateur (ex: sur le bureau)
+Ouvrez le dossier avec un éditeur comme VS Code, IntelliJ IDEA, ou même le Bloc-notes
+
 
 Git clone:
 
