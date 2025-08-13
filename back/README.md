@@ -1,6 +1,5 @@
 # Yoga App
 
-> The best backend for a Yoga app !
 
 Une application Spring Boot pour la gestion d'un studio de yoga, développée avec Java 17 et Spring Boot 2.6.1.
 
