@@ -112,24 +112,4 @@ java -jar target/yoga-app-0.0.1-SNAPSHOT.jar
 
 ---
 
-##  Technologies (d’après le pom.xml)
-
-- **Spring Boot2.6.1**: Web, Data JPA, Security, Validation
-- **Base de données**: MySQL (driver runtime) + **Testcontainers MySQL** pour les IT
-- **Tests**: JUnit5, Spring Boot Test, **Surefire** (UT), **Failsafe** (IT)
-- **Couverture**: **JaCoCo** (rapports UT, IT, **fusion globale**)
-- **Documentation**: **springdoc‑openapi** (Swagger UI)
-- **Mapping**: **MapStruct**
-- **Boilerplate**: **Lombok**
-- **Auth**: **JWT**
-
----
-
-##  Dépannage rapide
-
-- **`mvn: command not found`** → Installez Maven et ajoutez‑le au `PATH`.
-- **Docker non démarré / erreur Docker** → Lancez Docker Desktop/Engine puis relancez `mvn clean verify`.
-- **Port 8080 occupé** → `mvn spring-boot:run -Dspring-boot.run.arguments="--server.port=8081"`
-- **Rapport vide** → Vérifiez que vos fichiers de tests respectent bien `*Test.java` (UT) et `*IT.java`/`*ITCase.java` (IT).
-
 ---
