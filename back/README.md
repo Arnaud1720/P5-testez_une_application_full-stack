@@ -68,8 +68,8 @@ mvn clean verify && cp -r target/site/jacoco-merged /mnt/c/Users/$USER/Desktop/y
 
 ### 1. Cloner le projet
 ```bash
-git clone [URL_DU_REPO]
-cd yoga-app
+git clone https://github.com/Arnaud1720/P5-testez_une_application_full-stack.git
+cd P5-testez_une_application_full-stack
 ```
 
 ### 2. Configuration de la base de données
