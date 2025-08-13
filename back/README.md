@@ -16,6 +16,11 @@
 ---
 
 ##  Démarrage express (développeurs & non‑développeurs)
+```bash
+pour les non dev:
+aller sur le projet gitHub : https://github.com/Arnaud1720/P5-testez_une_application_full-stack.git
+cliquer sur le bouton vert "code" puis sur download Zip
+```
 
 ```bash
 # 1) Cloner puis entrer dans le projet
