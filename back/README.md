@@ -1,271 +1,135 @@
-# Yoga App
+# Yoga App — Backend
 
+> API Spring Boot pour un studio de yoga — **Java17**. Tests unitaires et d’intégration **en une commande**.
 
-Une application Spring Boot pour la gestion d'un studio de yoga, développée avec Java 17 et Spring Boot 2.6.1.
+---
 
-## Prérequis
+##  Prérequis (à faire une fois)
 
-- **Java 17** ou supérieur
-- **Maven 3.6+**
-- **Docker** (pour Testcontainers - lancé automatiquement)
-- **MySQL 8.0+** (uniquement pour le développement local)
-- **IDE** compatible (IntelliJ IDEA, Eclipse, VS Code)
+- Java17 (JDK)
+- Maven3.6+
+- Docker démarré (nécessaire pour les tests d’intégration avec **Testcontainers**)
+- Accès Internet au premier build (téléchargement des dépendances)
 
-## Technologies utilisées
+>  **Aucune installation MySQL** requise pour les tests: un conteneur **MySQL** est lancé automatiquement pendant les tests d’intégration.
 
-- **Framework**: Spring Boot 2.6.1
-- **Sécurité**: Spring Security + JWT
-- **Base de données**: MySQL + JPA/Hibernate
-- **Tests**: JUnit 5, **Testcontainers** (MySQL automatique), Spring Boot Test
-- **Documentation**: Swagger/OpenAPI 3
-- **Mapping**: MapStruct
-- **Couverture de code**: JaCoCo
-- **Build**: Maven
+---
 
-## Guide pas-à-pas pour débutants complets
+##  Démarrage express (développeurs & non‑développeurs)
 
-### Étape 1 : Prérequis (installation unique)
-1. **Java 17** : Télécharger depuis [Oracle](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html) ou [OpenJDK](https://openjdk.org/projects/jdk/17/)
-2. **Maven** : Télécharger depuis [Maven Apache](https://maven.apache.org/download.cgi)
-3. **Docker Desktop** : Télécharger depuis [Docker](https://www.docker.com/products/docker-desktop/)
-4. **Git** : Télécharger depuis [Git](https://git-scm.com/downloads)
-
-### Étape 2 : Récupérer le projet
 ```bash
-# Cloner le projet
-git clone https://github.com/Arnaud1720/P5-testez_une_application_full-stack.git
-cd yoga-app
-```
-
-### Étape 3 : Lancer les tests avec rapports automatiques sur le bureau
-
-**Windows (PowerShell) :**
-```powershell
-mvn clean verify; if ($?) { xcopy "target\site\jacoco-merged" "$env:USERPROFILE\Desktop\yoga-app-reports\" /E /I /Y }
-```
-
-**Linux/Mac :**
-```bash
-mvn clean verify && cp -r target/site/jacoco-merged ~/Desktop/yoga-app-reports/
-```
-
-**WSL :**
-```bash
-mvn clean verify && cp -r target/site/jacoco-merged /mnt/c/Users/$USER/Desktop/yoga-app-reports/
-```
-
-### Étape 4 : Consulter les rapports
-- Ouvrir le dossier `yoga-app-reports` sur votre bureau
-- Double-cliquer sur `index.html`
-- Les rapports de couverture s'ouvrent dans votre navigateur
-
-### Dépannage rapide
-- **"mvn command not found"** : Maven n'est pas installé ou pas dans le PATH
-- **"Docker daemon not running"** : Lancer Docker Desktop
-- **"Permission denied"** : Lancer le terminal en administrateur (Windows) ou avec sudo (Linux/Mac)
-
-## Installation et démarrage rapide pour développeurs
-
-### 1. Cloner le projet
-```bash
+# 1) Cloner puis entrer dans le projet
 git clone https://github.com/Arnaud1720/P5-testez_une_application_full-stack.git
 cd P5-testez_une_application_full-stack
+
+# 2) Compiler + lancer tous les tests (UT + IT) + générer le rapport de couverture
+mvn clean verify
 ```
 
-### 2. Configuration de la base de données
-**Aucune configuration manuelle requise !**
-- Les tests utilisent **Testcontainers** qui lance automatiquement un conteneur MySQL
-- Pour le développement, configurez vos paramètres dans `application.properties`
-- Pour les tests, tout est géré automatiquement via `AbstractMySqlIT.java`
+Ouvrez ensuite le rapport global de couverture (double‑cliquez sur `index.html`):
 
-### 3. Installer les dépendances
-```bash
-mvn clean install
+```
+target/site/jacoco-merged/index.html
 ```
 
-### 4. Lancer l'application
+---
+
+##  Lancer les tests
+
+### Tout d’un coup (unitaires **+** intégration)
 ```bash
+mvn clean verify
+```
+
+### Uniquement les **tests unitaires**
+```bash
+# Phase "test" uniquement (Surefire) → ne lance pas les IT
+mvn test
+```
+
+### Uniquement les **tests d’intégration**
+```bash
+# On évite d’exécuter les UT et on cible les IT via Failsafe
+mvn -Dtest=none -Dit.test=*IT -DfailIfNoTests=false verify
+```
+
+### Un **test unitaire** précis
+```bash
+# Exécute seulement UserServiceTest (adapter le nom)
+mvn -Dtest=UserServiceTest test
+```
+
+### Un **test d’intégration** précis
+```bash
+# Exécute seulement SessionIT (adapter le nom)
+mvn -Dit.test=SessionIT -DfailIfNoTests=false verify
+```
+
+**Conventions de nommage configurées dans Maven**
+- **Unitaires (UT)**: fichiers se terminant par `*Test.java` (plugin **Surefire**)
+- **Intégration (IT)**: fichiers se terminant par `*IT.java` ou `*ITCase.java` (plugin **Failsafe**)
+
+---
+
+##  Rapports JaCoCo (couverture)
+
+Générés automatiquement pendant `verify`:
+
+- UT: `target/site/jacoco-ut/index.html`
+- IT: `target/site/jacoco-it/index.html`
+- **Global (fusionné)**: `target/site/jacoco-merged/index.html`
+
+### (optionnel) Copier le rapport sur le Bureau
+- **Windows (PowerShell)**
+  ```powershell
+  mvn clean verify; if ($?) { xcopy "target\site\jacoco-merged" "$env:USERPROFILE\Desktop\yoga-app-reports\" /E /I /Y }
+  ```
+- **Linux / macOS**
+  ```bash
+  mvn clean verify && cp -r target/site/jacoco-merged ~/Desktop/yoga-app-reports/
+  ```
+- **WSL**
+  ```bash
+  mvn clean verify && cp -r target/site/jacoco-merged /mnt/c/Users/$USER/Desktop/yoga-app-reports/
+  ```
+
+---
+
+## Lancer l’application (facultatif)
+
+```bash
+# Démarrer en développement
 mvn spring-boot:run
-```
 
-L'application sera accessible sur : `http://localhost:8080`
-
-## Commandes Maven essentielles
-
-### Build et compilation
-```bash
-# Compilation propre
-mvn clean compile
-
-# Build complet avec tests
-mvn clean install
-
-# Build sans tests
-mvn clean install -DskipTests
-
-# Package (création du JAR)
-mvn clean package
-```
-
-### Exécution
-```bash
-# Démarrage en mode développement
-mvn spring-boot:run
-
-# Démarrage avec profil spécifique
-mvn spring-boot:run -Dspring-boot.run.profiles=dev
-
-# Exécution du JAR généré
-java -jar target/yoga-app-0.0.1-SNAPSHOT.jar
-```
-
-### Tests avec copie automatique des rapports
-```bash
-# Tests avec rapport de couverture
-mvn clean verify
-
-# Tests avec copie automatique des rapports sur le bureau
-# Windows (PowerShell)
-mvn clean verify && xcopy "target\site\jacoco-merged" "%USERPROFILE%\Desktop\yoga-app-reports\" /E /I /Y
-
-# Windows (CMD)  
-mvn clean verify && robocopy target\site\jacoco-merged %USERPROFILE%\Desktop\yoga-app-reports /E
-
-# Linux/Mac
-mvn clean verify && cp -r target/site/jacoco-merged ~/Desktop/yoga-app-reports/
-
-# WSL (depuis le projet)
-mvn clean verify && cp -r target/site/jacoco-merged /mnt/c/Users/$USER/Desktop/yoga-app-reports/
-
-# Lancer uniquement les tests d'intégration spécifiques
-mvn test -Dtest=SessionIT
-mvn test -Dtest=UserIT
-mvn test -Dtest=TeacherIT
-```
-
-> **Note**: Les tests d'intégration utilisent Testcontainers qui lance automatiquement un conteneur MySQL. Aucune configuration de base de données manuelle n'est requise !
-
-### Rapports et qualité
-```bash
-# Génération des rapports JaCoCo
-mvn jacoco:report
-
-# Rapport de couverture globale (UT + IT)
-mvn clean verify
-# Les rapports sont dans target/site/jacoco-merged/
-```
-
-## Tests d'intégration avec Testcontainers
-
-L'application utilise une architecture de tests moderne avec **Testcontainers** :
-
-### Configuration automatique
-- **`AbstractMySqlIT.java`** : Classe de base qui lance un conteneur MySQL automatiquement
-- **Profil test** : `application-test.properties` avec `create-drop` pour des tests isolés
-- **Pas de configuration manuelle** : MySQL est créé et détruit automatiquement
-
-### Classes de tests disponibles
-- **`SessionIT.java`** : Tests d'intégration pour les sessions yoga
-- **`UserIT.java`** : Tests d'intégration pour l'authentification et users
-- **`TeacherIT.java`** : Tests d'intégration pour la gestion des professeurs
-
-### Lancement des tests
-```bash
-# Tous les tests d'intégration (Docker requis)
-mvn verify
-
-# Test spécifique d'intégration
-mvn test -Dtest=SessionIT
-
-# Tests avec nettoyage automatique de la base
-mvn clean verify
-```
-
-## Couverture de code
-
-Les rapports JaCoCo sont générés automatiquement lors du `mvn verify` :
-
-- **Tests unitaires** : `target/site/jacoco-ut/index.html`
-- **Tests d'intégration** : `target/site/jacoco-it/index.html`
-- **Rapport global** : `target/site/jacoco-merged/index.html`
-
-## Documentation API
-
-La documentation Swagger est accessible une fois l'application démarrée :
-- **Swagger UI** : `http://localhost:8080/swagger-ui.html`
-- **OpenAPI JSON** : `http://localhost:8080/v3/api-docs`
-
-## Structure du projet
-
-```
-yoga-app/
-├── src/
-│   ├── main/
-│   │   ├── java/
-│   │   │   └── com/openclassrooms/yogaapp/
-│   │   │       ├── controller/     # Contrôleurs REST
-│   │   │       ├── service/        # Services métier
-│   │   │       ├── repository/     # Repositories JPA
-│   │   │       ├── model/          # Entités JPA
-│   │   │       ├── dto/            # Data Transfer Objects
-│   │   │       ├── mapper/         # MapStruct mappers
-│   │   │       ├── security/       # Configuration sécurité
-│   │   │       └── config/         # Configurations
-│   │   └── resources/
-│   │       ├── application.properties
-│   │       └── data.sql           # Données de test
-│   └── test/
-│       ├── java/                  # Tests unitaires (*Test.java)
-│       └── integration-test/      # Tests d'intégration (*IT.java)
-├── target/                        # Artefacts générés
-├── pom.xml
-└── README.md
-```
-
-## Profils d'environnement
-
-L'application supporte différents profils :
-
-```bash
-# Développement
-mvn spring-boot:run -Dspring-boot.run.profiles=dev
-
-# Test
-mvn spring-boot:run -Dspring-boot.run.profiles=test
-
-# Production
-mvn spring-boot:run -Dspring-boot.run.profiles=prod
-```
-
-## Debugging
-
-### Mode debug avec Maven
-```bash
-mvn spring-boot:run -Dspring-boot.run.jvmArguments="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005"
-```
-
-### Logs en mode verbose
-```bash
-mvn spring-boot:run -Dspring-boot.run.arguments="--logging.level.com.openclassrooms=DEBUG"
-```
-
-## Déploiement
-
-### Création du JAR exécutable
-```bash
+# Package + exécution du JAR
 mvn clean package
 java -jar target/yoga-app-0.0.1-SNAPSHOT.jar
 ```
 
-### Avec profil de production
-```bash
-java -jar target/yoga-app-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod
-```
+**Documentation API (springdoc‑openapi)** une fois l’app démarrée:
+- Swagger UI: `http://localhost:8080/swagger-ui.html`
+- OpenAPI JSON: `http://localhost:8080/v3/api-docs`
 
-## Contribution
+---
 
-1. Fork le projet
-2. Créer une branche feature (`git checkout -b feature/nouvelle-fonctionnalite`)
-3. Commit les changements (`git commit -am 'Ajout nouvelle fonctionnalité'`)
-4. Push vers la branche (`git push origin feature/nouvelle-fonctionnalite`)
-5. Créer une Pull Request
+##  Technologies (d’après le pom.xml)
+
+- **Spring Boot2.6.1**: Web, Data JPA, Security, Validation
+- **Base de données**: MySQL (driver runtime) + **Testcontainers MySQL** pour les IT
+- **Tests**: JUnit5, Spring Boot Test, **Surefire** (UT), **Failsafe** (IT)
+- **Couverture**: **JaCoCo** (rapports UT, IT, **fusion globale**)
+- **Documentation**: **springdoc‑openapi** (Swagger UI)
+- **Mapping**: **MapStruct**
+- **Boilerplate**: **Lombok**
+- **Auth**: **JWT**
+
+---
+
+##  Dépannage rapide
+
+- **`mvn: command not found`** → Installez Maven et ajoutez‑le au `PATH`.
+- **Docker non démarré / erreur Docker** → Lancez Docker Desktop/Engine puis relancez `mvn clean verify`.
+- **Port 8080 occupé** → `mvn spring-boot:run -Dspring-boot.run.arguments="--server.port=8081"`
+- **Rapport vide** → Vérifiez que vos fichiers de tests respectent bien `*Test.java` (UT) et `*IT.java`/`*ITCase.java` (IT).
+
+---
