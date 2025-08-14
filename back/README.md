@@ -12,7 +12,7 @@
 - Accès Internet au premier build (téléchargement des dépendances)
 
 >  **Aucune installation MySQL** requise pour les tests: un conteneur **MySQL** est lancé automatiquement pendant les tests d’intégration.
-
+ 
 ---
 
 ##  Démarrage express (développeurs & non‑développeurs)
