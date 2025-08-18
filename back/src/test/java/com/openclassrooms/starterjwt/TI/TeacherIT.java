@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,6 +22,7 @@ import static org.mockito.Mockito.verify;
 @AutoConfigureMockMvc
 @ActiveProfiles("test")                              // <- lit src/test/resources/application-test.properties
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+
 public class TeacherIT {
     @Autowired
     private TeacherRepository teacherRepository;

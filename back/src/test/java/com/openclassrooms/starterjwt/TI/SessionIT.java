@@ -14,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.Date;
 import java.util.List;
@@ -25,7 +26,8 @@ import static org.junit.jupiter.api.Assertions.*;
 @AutoConfigureMockMvc
 @ActiveProfiles("test")                              // <- lit src/test/resources/application-test.properties
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class SessionIT extends AbstractMySqlIT{
+
+public class SessionIT{
     @Autowired
     private SessionService sessionService;
 
