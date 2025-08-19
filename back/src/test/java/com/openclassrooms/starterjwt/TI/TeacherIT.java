@@ -20,10 +20,9 @@ import static org.mockito.Mockito.verify;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@ActiveProfiles("test")                              // <- lit src/test/resources/application-test.properties
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 
-public class TeacherIT {
+public class TeacherIT  {
     @Autowired
     private TeacherRepository teacherRepository;
     @Autowired

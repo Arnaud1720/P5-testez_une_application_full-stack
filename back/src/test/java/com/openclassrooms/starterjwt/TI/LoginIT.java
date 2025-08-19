@@ -1,5 +1,6 @@
 package com.openclassrooms.starterjwt.TI;
 
+import com.openclassrooms.starterjwt.WithDockerOrH2;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,9 +25,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 @SpringBootTest
 @AutoConfigureMockMvc
-@ActiveProfiles("test")                              // <- lit src/test/resources/application-test.properties
+@WithDockerOrH2
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class LoginIT {
+public class LoginIT  {
 
     @Autowired MockMvc mockMvc;
     @Autowired ObjectMapper objectMapper;
