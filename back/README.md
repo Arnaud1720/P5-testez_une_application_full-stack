@@ -39,82 +39,16 @@ target/site/jacoco-merged/index.html
 
 ---
 
-##  Lancer les tests
-
-### Tout d’un coup (unitaires **+** intégration)
-```bash
-mvn clean verify
-```
-
-### Uniquement les **tests unitaires**
-```bash
-# Phase "test" uniquement (Surefire) → ne lance pas les IT
-mvn test
-```
-
-### Uniquement les **tests d’intégration**
-```bash
-# On évite d’exécuter les UT et on cible les IT via Failsafe
-mvn -Dtest=none -Dit.test=*IT -DfailIfNoTests=false verify
-```
-
-### Un **test unitaire** précis
-```bash
-# Exécute seulement UserServiceTest (adapter le nom)
-mvn -Dtest=UserServiceTest test
-```
-
-### Un **test d’intégration** précis
-```bash
-# Exécute seulement SessionIT (adapter le nom)
-mvn -Dit.test=SessionIT -DfailIfNoTests=false verify
-```
-
-**Conventions de nommage configurées dans Maven**
-- **Unitaires (UT)**: fichiers se terminant par `*Test.java` (plugin **Surefire**)
-- **Intégration (IT)**: fichiers se terminant par `*IT.java` ou `*ITCase.java` (plugin **Failsafe**)
+##  rapport de coverage backend 
 
 ---
+- IT   
+```P5-testez_une_application_full-stack\back\target\site\jacoco-it\index.html```
+- UT
+  ```P5-testez_une_application_full-stack\back\target\site\jacoco-ut\index.html```
+- Merge
+  ```P5-testez_une_application_full-stack\back\target\site\jacoco-merged\index.html```
 
-##  Rapports JaCoCo (couverture)
-
-Générés automatiquement pendant `verify`:
-
-- UT: `target/site/jacoco-ut/index.html`
-- IT: `target/site/jacoco-it/index.html`
-- **Global (fusionné)**: `target/site/jacoco-merged/index.html`
-
-### (optionnel) Copier le rapport sur le Bureau
-- **Windows (PowerShell)**
-  ```powershell
-  mvn clean verify; if ($?) { xcopy "target\site\jacoco-merged" "$env:USERPROFILE\Desktop\yoga-app-reports\" /E /I /Y }
-  ```
-- **Linux / macOS**
-  ```bash
-  mvn clean verify && cp -r target/site/jacoco-merged ~/Desktop/yoga-app-reports/
-  ```
-- **WSL**
-  ```bash
-  mvn clean verify && cp -r target/site/jacoco-merged /mnt/c/Users/$USER/Desktop/yoga-app-reports/
-  ```
 
 ---
-
-## Lancer l’application (facultatif)
-
-```bash
-# Démarrer en développement
-mvn spring-boot:run
-
-# Package + exécution du JAR
-mvn clean package
-java -jar target/yoga-app-0.0.1-SNAPSHOT.jar
-```
-
-**Documentation API (springdoc‑openapi)** une fois l’app démarrée:
-- Swagger UI: `http://localhost:8080/swagger-ui.html`
-- OpenAPI JSON: `http://localhost:8080/v3/api-docs`
-
----
-
----
+r

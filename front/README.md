@@ -1,81 +1,81 @@
-# Yoga
+### Frontend (Angular)
+- **Unit tests (Karma/Jasmine) — couverture**:
+  - Rapport: `front/coverage/<nom-projet>/index.html` *(après `ng test --code-coverage`)*
+- **E2E (Cypress + nyc)** — si configuré:
+  - Rapport: `front/coverage/lcov-report/index.html` *(après les scripts e2e + génération nyc)*
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 14.1.0.
+> ℹ️ Si un dossier n’existe pas après une commande, la phase correspondante n’a pas tourné (ex. pas de `failsafe-reports` ⇒ pas d’IT).
 
-## Start the project
-Méthode 1 : Télécharger le ZIP depuis GitHub (recommandé pour les débutants)
-Allez sur la page du projet :
-> 👉 https://github.com/Arnaud1720/P5-testez_une_application_full-stack
+---
 
-Cliquez sur le bouton vert "Code"
-Sélectionnez "Download ZIP"
-Extrayez le dossier sur votre ordinateur (ex: sur le bureau)
-Ouvrez le dossier avec un éditeur comme VS Code, IntelliJ IDEA, ou même le Bloc-notes
+## 🛠️ Installer/Utiliser Angular CLI & Cypress (frontend)
+
+### Angular CLI (compatible Angular 14.x)
+```bash
+# Installation globale de l’outil de ligne de commande
+npm i -g @angular/cli@14
+
+# Vérifier la version
+ng version
+
+# Installer les dépendances du front
+cd front
+npm install
+
+# Démarrer le front
+ng serve           # ou: npm run start
+```
+
+### Cypress (tests end‑to‑end)
+```bash
+# Depuis le dossier front
+cd front
+
+# Installer Cypress (dev dependency)
+npm i -D cypress
+
+# Ouvrir l’interface Cypress (mode interactif)
+npx cypress open
+
+# Lancer en mode headless (CI)
+npx cypress run
+```
+
+### Couverture des tests unitaires Angular (optionnel)
+```bash
+cd front
+npx ng test --watch=false --code-coverage
+# Ouvrir ensuite: front/coverage/<nom-projet>/index.html
+```
+
+---
+
+## ️ Lancer l’application backend (facultatif)
+
+```bash
+cd back
+
+# Démarrer en développement
+mvn spring-boot:run
+
+# Package + exécution du JAR
+mvn clean package
+java -jar target/yoga-app-0.0.1-SNAPSHOT.jar
+```
+
+**Documentation API (springdoc‑openapi)** une fois l’app démarrée:
+- Swagger UI: `http://localhost:8080/swagger-ui.html`
+- OpenAPI JSON: `http://localhost:8080/v3/api-docs`
+
+---
+
+##  Dépannage rapide
+
+- **`mvn: command not found`** → installez Maven et ajoutez‑le au `PATH`.
+- **Docker non démarré / Testcontainers en erreur** → lancez Docker Desktop/Engine puis relancez `mvn clean verify`.
+- **Port 8080 occupé** → `mvn spring-boot:run -Dspring-boot.run.arguments="--server.port=8081"`
+- **Rapport JaCoCo vide** → vérifier que vos classes de tests respectent `*Test.java` (UT) et `*IT.java`/`*ITCase.java` (IT).
+
+---
 
 
-Git clone:
-
-> git clone https://github.com/OpenClassrooms-Student-Center/P5-Full-Stack-testing
-
-Go inside folder:
-
-> cd yoga
-
-Install dependencies:
-
-> npm install
-
-Launch Front-end:
-
-> npm run start;
-
-
-## Ressources
-
-### Mockoon env 
-
-### Postman collection
-
-For Postman import the collection
-
-> ressources/postman/yoga.postman_collection.json 
-
-by following the documentation: 
-
-https://learning.postman.com/docs/getting-started/importing-and-exporting-data/#importing-data-into-postman
-
-
-### MySQL
-
-SQL script for creating the schema is available `ressources/sql/script.sql`
-
-By default the admin account is:
-- login: yoga@studio.com
-- password: test!1234
-
-
-### Test
-
-#### E2E
-
-Launching e2e test:
-
-> npm run e2e
-
-Generate coverage report (you should launch e2e test before):
-
-> npm run e2e:coverage
-
-Report is available here:
-
-> front/coverage/lcov-report/index.html
-
-#### Unitary test
-
-Launching test:
-
-> npm run test
-
-for following change:
-
-> npm run test:watch
